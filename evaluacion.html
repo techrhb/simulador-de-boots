@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación Interactiva: Granjas de Bots</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #0f172a;
+            font-family: Arial, sans-serif;
+            color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            box-sizing: border-box;
+            min-height: 100vh;
+        }
+
+        .contenedor-evaluacion {
+            width: 100%;
+            max-width: 800px;
+            background: #1e293b;
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            box-sizing: border-box;
+        }
+
+        @media (min-width: 600px) {
+            .contenedor-evaluacion {
+                padding: 30px;
+            }
+        }
+
+        h1 {
+            color: #38bdf8;
+            text-align: center;
+            font-size: 18px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        @media (min-width: 600px) {
+            h1 {
+                font-size: 22px;
+            }
+        }
+
+        .pregunta-card {
+            background: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .pregunta-titulo {
+            font-size: 14px;
+            font-weight: bold;
+            color: #93c5fd;
+            margin-bottom: 12px;
+        }
+
+        @media (min-width: 600px) {
+            .pregunta-titulo {
+                font-size: 16px;
+            }
+        }
+
+        .opcion-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: #e2e8f0;
+            cursor: pointer;
+            line-height: 1.4;
+        }
+
+        @media (min-width: 600px) {
+            .opcion-label {
+                font-size: 14px;
+            }
+        }
+
+        .opcion-label input {
+            margin-top: 3px;
+        }
+
+        .btn-enviar {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto 0 auto;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+            width: 100%;
+        }
+
+        @media (min-width: 600px) {
+            .btn-enviar {
+                width: auto;
+            }
+        }
+
+        .btn-enviar:hover {
+            background-color: #1d4ed8;
+        }
+
+        #resultadosContainer {
+            display: none;
+        }
+
+        .resultado-header {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .retro-card {
+            background: #0f172a;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .retro-card.correcta {
+            border-left: 5px solid #10b981;
+        }
+
+        .retro-card.incorrecta {
+            border-left: 5px solid #ef4444;
+        }
+
+        .linea-divisorias {
+            border: 0;
+            border-top: 1px solid #475569;
+            margin: 15px 0;
+        }
+
+        .btn-reintentar {
+            background-color: #d97706;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto 0 auto;
+            width: 100%;
+        }
+
+        @media (min-width: 600px) {
+            .btn-reintentar {
+                width: auto;
+            }
+        }
+
+        .btn-reintentar:hover {
+            background-color: #b45309;
+        }
+
+        .btn-volver {
+            background-color: #475569;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            display: block;
+            margin: 15px auto 0 auto;
+            width: 100%;
+            text-align: center;
+        }
+
+        @media (min-width: 600px) {
+            .btn-volver {
+                width: auto;
+            }
+        }
+
+        .btn-volver:hover {
+            background-color: #334155;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="contenedor-evaluacion">
+        <h1>Evaluación de Conocimientos: Granjas de Bots</h1>
+
+        <form id="quizForm" onsubmit="evaluarQuiz(event)">
+            <div id="preguntasContainer"></div>
+            <button type="submit" class="btn-enviar">Enviar Respuestas</button>
+            <button type="button" class="btn-volver" onclick="window.location.href='index.html'">Volver al Simulador</button>
+        </form>
+
+        <div id="resultadosContainer">
+            <div id="resultadoHeader" class="resultado-header"></div>
+            <div id="retroalimentacionContainer"></div>
+            <div id="contenedorBotonReintentar"></div>
+            <button type="button" class="btn-volver" onclick="window.location.href='index.html'">Volver al Simulador</button>
+        </div>
+    </div>
+
+    <script>
+        const bancoPreguntas = [
+            {
+                pregunta: "¿Qué son las granjas de bots?",
+                correcta: "Una granja de bots es un conjunto de dispositivos (como teléfonos celulares o servidores) conectados y controlados por programas informáticos para manejar de forma automática miles de cuentas falsas en internet.",
+                falsas: [
+                    "Es una red exclusiva de computadoras portátiles empleada únicamente para realizar copias de seguridad empresariales.",
+                    "Consiste en un grupo de centros de llamadas atendidos por personas reales que responden comentarios masivos.",
+                    "Es un sistema de ciberseguridad gubernamental diseñado para bloquear virus informáticos y troyanos."
+                ]
+            },
+            {
+                pregunta: "¿Cómo funciona una granja de bots?",
+                correcta: "Físicamente, suelen estar compuestas por estructuras de almacenamiento (racks) que sostienen decenas o cientos de teléfonos celulares interconectados a múltiples líneas telefónicas y sistemas informáticos, controlados de forma centralizada mediante software especializado e inteligencia artificial.",
+                falsas: [
+                    "Funciona mediante la contratación masiva de operadores humanos que manejan perfiles falsos por turnos rotativos.",
+                    "Opera de forma inalámbrica exclusiva mediante la conexión satelital de routers domésticos sin equipos físicos centralizados.",
+                    "Utiliza consolas de videojuegos conectadas a redes sociales para enviar mensajes de texto automáticos de manera manual."
+                ]
+            },
+            {
+                pregunta: "¿Qué pretende una granja de bots?",
+                correcta: "La finalidad principal de las granjas de bots es automatizar el engaño a gran escala para manipular la percepción pública, los datos de internet o los mercados financieros.",
+                falsas: [
+                    "Busca educar a la población sobre el uso correcto de las redes sociales y fomentar el debate abierto.",
+                    "Tiene como único objetivo acelerar la velocidad de navegación web para los usuarios comunes en plataformas móviles.",
+                    "Pretende ofrecer servicio de soporte técnico automatizado y gratuito para empresas de comercio electrónico."
+                ]
+            },
+            {
+                pregunta: "¿Qué efectos nocivos provoca una granja de bots?",
+                correcta: "Las granjas de bots provocan graves daños en la sociedad, la economía y la tecnología a través de los siguientes efectos negativos: Destrucción del debate democrático, Crecimiento de la desinformación, Censura por acoso, Pérdidas económicas y fraude, Pérdida de confianza digital.",
+                falsas: [
+                    "Generan mayor transparencia informativa, estabilidad económica y un incremento notable en la veracidad de los medios.",
+                    "Provocan exclusivamente un ahorro de energía eléctrica en los servidores corporativos y mejor conectividad.",
+                    "Favorecen la libre expresión absoluta sin consecuencias, eliminando por completo el acoso en línea."
+                ]
+            },
+            {
+                pregunta: "¿Cómo se puede detectar un bot?",
+                correcta: "Nombres sospechosos: Usan combinaciones genéricas seguidas de secuencias largas de números, Fotos falsas: Utilizan imágenes de stock o retratos creados por IA, Biografía genérica: Tienen descripciones vacías o incoherentes.",
+                falsas: [
+                    "Tienen historiales de actividad de más de 10 años, fotografías reales verificadas por notario y direcciones físicas públicas.",
+                    "Publican exclusivamente contenido científico validado por universidades y responden llamadas de video en vivo de forma constante.",
+                    "Muestran un comportamiento completamente idéntico al de un ser humano real sin repetir frases ni patrones automáticos."
+                ]
+            }
+        ];
+
+        let preguntasActuales = [];
+
+        function mezclarArreglo(arreglo) {
+            let arr = [...arreglo];
+            for (let i = arr.length - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function cargarCuestionario() {
+            document.getElementById('resultadosContainer').style.display = 'none';
+            document.getElementById('quizForm').style.display = 'block';
+            
+            let container = document.getElementById('preguntasContainer');
+            container.innerHTML = '';
+            preguntasActuales = [];
+
+            bancoPreguntas.forEach((item, index) => {
+                let opciones = mezclarArreglo([item.correcta, ...item.falsas]);
+                
+                preguntasActuales.push({
+                    id: index,
+                    pregunta: item.pregunta,
+                    correcta: item.correcta,
+                    opciones: opciones
+                });
+
+                let htmlPregunta = `
+                    <div class="pregunta-card">
+                        <div class="pregunta-titulo">${index + 1}. ${item.pregunta}</div>
+                `;
+
+                opciones.forEach((opcion, optIndex) => {
+                    htmlPregunta += `
+                        <label class="opcion-label">
+                            <input type="radio" name="pregunta_${index}" value="${optIndex}" required>
+                            <span>${opcion}</span>
+                        </label>
+                    `;
+                });
+
+                htmlPregunta += `</div>`;
+                container.innerHTML += htmlPregunta;
+            });
+        }
+
+        function evaluarQuiz(event) {
+            event.preventDefault();
+            let correctasTotales = 0;
+            let retroHTML = '';
+
+            preguntasActuales.forEach((item, index) => {
+                let radios = document.getElementsByName(`pregunta_${index}`);
+                let respuestaSeleccionadaIndex = -1;
+
+                for (let r of radios) {
+                    if (r.checked) {
+                        respuestaSeleccionadaIndex = parseInt(r.value);
+                        break;
+                    }
+                }
+
+                let textoSeleccionado = item.opciones[respuestaSeleccionadaIndex];
+                let esCorrecta = (textoSeleccionado === item.correcta);
+
+                if (esCorrecta) {
+                    correctasTotales++;
+                    retroHTML += `
+                        <div class="retro-card correcta">
+                            <strong>Pregunta ${index + 1}:</strong> ¡Correcto!<br>
+                            <em>${item.pregunta}</em><br>
+                            <strong>Respuesta correcta:</strong> ${item.correcta}
+                        </div>
+                        <hr class="linea-divisorias">
+                    `;
+                } else {
+                    retroHTML += `
+                        <div class="retro-card incorrecta">
+                            <strong>Pregunta ${index + 1}:</strong> Incorrecto.<br>
+                            <em>${item.pregunta}</em><br>
+                            <em>Tu respuesta:</em> ${textoSeleccionado}<br>
+                            <strong>Respuesta correcta:</strong> ${item.correcta}
+                        </div>
+                        <hr class="linea-divisorias">
+                    `;
+                }
+            });
+
+            let porcentaje = (correctasTotales / bancoPreguntas.length) * 100;
+
+            document.getElementById('quizForm').style.display = 'none';
+            document.getElementById('resultadosContainer').style.display = 'block';
+
+            let headerHTML = `Calificación final: ${porcentaje.toFixed(0)}% (${correctasTotales} de ${bancoPreguntas.length} correctas)`;
+            document.getElementById('resultadoHeader').innerHTML = headerHTML;
+            document.getElementById('retroalimentacionContainer').innerHTML = retroHTML;
+
+            let contenedorBoton = document.getElementById('contenedorBotonReintentar');
+            if (porcentaje < 70) {
+                contenedorBoton.innerHTML = `<button type="button" class="btn-reintentar" onclick="cargarCuestionario()">Reintentar Cuestionario</button>`;
+            } else {
+                contenedorBoton.innerHTML = `<p style="color: #10b981; text-align: center; font-weight: bold;">¡Excelente trabajo! Has superado la evaluación con éxito.</p>`;
+            }
+        }
+
+        window.onload = cargarCuestionario;
+    </script>
+</body>
+</html>

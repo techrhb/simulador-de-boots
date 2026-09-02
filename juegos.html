@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minijuegos Educativos: Granjas de Bots</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #0f172a;
+            font-family: Arial, sans-serif;
+            color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            box-sizing: border-box;
+            min-height: 100vh;
+        }
+
+        .contenedor-principal {
+            width: 100%;
+            max-width: 1050px;
+            background: #1e293b;
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            box-sizing: border-box;
+        }
+
+        @media (min-width: 600px) {
+            .contenedor-principal {
+                padding: 25px;
+            }
+        }
+
+        h1 {
+            color: #38bdf8;
+            text-align: center;
+            font-size: 18px;
+            margin-top: 0;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        @media (min-width: 600px) {
+            h1 {
+                font-size: 22px;
+            }
+        }
+
+        .tabs-container {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background-color: #334155;
+            color: #cbd5e1;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        @media (min-width: 600px) {
+            .tab-btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
+
+        .tab-btn.active {
+            background-color: #2563eb;
+            color: #ffffff;
+        }
+
+        .juego-seccion {
+            display: none;
+        }
+
+        .juego-seccion.active {
+            display: block;
+        }
+
+        h2 {
+            color: #93c5fd;
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+
+        @media (min-width: 600px) {
+            h2 {
+                font-size: 16px;
+            }
+        }
+
+        p.instruccion-juego {
+            font-size: 12px;
+            color: #cbd5e1;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        @media (min-width: 600px) {
+            p.instruccion-juego {
+                font-size: 13px;
+            }
+        }
+
+        /* SOPA DE LETRAS RESPONSIVA */
+        .sopa-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        @media (min-width: 800px) {
+            .sopa-layout {
+                flex-direction: row;
+                justify-content: center;
+                align-items: flex-start;
+            }
+        }
+
+        .sopa-grid-container {
+            width: 100%;
+            overflow-x: auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        .sopa-grid {
+            display: grid;
+            grid-template-columns: repeat(14, 26px);
+            grid-template-rows: repeat(14, 26px);
+            gap: 2px;
+            background: #0f172a;
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid #475569;
+        }
+
+        @media (min-width: 600px) {
+            .sopa-grid {
+                grid-template-columns: repeat(14, 28px);
+                grid-template-rows: repeat(14, 28px);
+                padding: 10px;
+            }
+        }
+
+        .sopa-celda {
+            background: #1e293b;
+            color: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 12px;
+            border-radius: 3px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        @media (min-width: 600px) {
+            .sopa-celda {
+                font-size: 13px;
+            }
+        }
+
+        .sopa-celda:hover {
+            background: #334155;
+        }
+
+        .sopa-celda.seleccionada {
+            background: #2563eb !important;
+        }
+
+        .sopa-celda.encontrada {
+            background: #10b981 !important;
+            color: white;
+        }
+
+        .sopa-palabras-lista {
+            background: #0f172a;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #475569;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        @media (min-width: 800px) {
+            .sopa-palabras-lista {
+                min-width: 220px;
+                width: auto;
+            }
+        }
+
+        .sopa-palabras-lista ul {
+            margin: 5px 0 0 0;
+            padding-left: 18px;
+            font-size: 12px;
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+
+        @media (min-width: 600px) {
+            .sopa-palabras-lista ul {
+                font-size: 13px;
+            }
+        }
+
+        .palabra-encontrada {
+            text-decoration: line-through;
+            color: #10b981 !important;
+        }
+
+        /* CRUCIGRAMA RESPONSIVO */
+        .crucigrama-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .crucigrama-pistas-contenedor {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        @media (min-width: 800px) {
+            .crucigrama-pistas-contenedor {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        }
+
+        .crucigrama-pistas {
+            background: #0f172a;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #475569;
+            font-size: 11px;
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        @media (min-width: 600px) {
+            .crucigrama-pistas {
+                font-size: 12px;
+                padding: 15px;
+            }
+        }
+
+        .crucigrama-pistas ol {
+            margin: 5px 0 0 0;
+            padding-left: 16px;
+        }
+
+        .crucigrama-pistas li {
+            margin-bottom: 5px;
+        }
+
+        .crucigrama-grid-box {
+            display: grid;
+            gap: 2px;
+            background: #0f172a;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #475569;
+            overflow-x: auto;
+            width: 100%;
+            max-height: 380px;
+        }
+
+        .crucigrama-casilla {
+            width: 28px;
+            height: 28px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            background: #1e293b;
+            color: white;
+            border: 1px solid #475569;
+            border-radius: 3px;
+            text-transform: uppercase;
+        }
+
+        @media (min-width: 600px) {
+            .crucigrama-casilla {
+                width: 30px;
+                height: 30px;
+                font-size: 13px;
+            }
+        }
+
+        .crucigrama-casilla:focus {
+            background: #2563eb;
+            outline: none;
+        }
+
+        .crucigrama-casilla.vacia {
+            background: transparent;
+            border: none;
+            pointer-events: none;
+        }
+
+        .botones-acciones {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        @media (min-width: 600px) {
+            .botones-acciones {
+                flex-direction: row;
+                gap: 10px;
+            }
+        }
+
+        .btn-accion {
+            background-color: #059669;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 15px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        @media (min-width: 600px) {
+            .btn-accion {
+                width: auto;
+            }
+        }
+
+        .btn-accion:hover {
+            background-color: #047857;
+        }
+
+        .btn-reintentar {
+            background-color: #d97706;
+        }
+
+        .btn-reintentar:hover {
+            background-color: #b45309;
+        }
+
+        .btn-finalizar {
+            background-color: #2563eb;
+        }
+
+        .btn-finalizar:hover {
+            background-color: #1d4ed8;
+        }
+
+        .mensaje-juego {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+
+        @media (min-width: 600px) {
+            .mensaje-juego {
+                font-size: 15px;
+            }
+        }
+
+        .btn-volver {
+            background-color: #475569;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto 0 auto;
+            width: 100%;
+        }
+
+        @media (min-width: 600px) {
+            .btn-volver {
+                width: auto;
+            }
+        }
+
+        .btn-volver:hover {
+            background-color: #334155;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="contenedor-principal">
+        <h1>ZONA DE APRENDIZAJE: MINIJUEGOS INTERACTIVOS</h1>
+
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="cambiarJuego('sopa')">Sopa de Letras</button>
+            <button class="tab-btn" onclick="cambiarJuego('crucigrama')">Crucigrama (8V y 8H)</button>
+        </div>
+
+        <!-- SECCIÓN 1: SOPA DE LETRAS -->
+        <div id="seccionSopa" class="juego-seccion active">
+            <h2>Sopa de Letras: Términos Tecnológicos y Amenazas</h2>
+            <p class="instruccion-juego">Busca 9 palabras clave ocultas en horizontal, vertical o diagonal. Toca la primera letra y luego la última de cada palabra.</p>
+            
+            <div class="sopa-layout">
+                <div class="sopa-grid-container">
+                    <div id="sopaGrid" class="sopa-grid"></div>
+                </div>
+                <div class="sopa-palabras-lista">
+                    <strong>Palabras a buscar:</strong>
+                    <ul id="listaPalabrasUI">
+                        <li id="pal_BOTS">BOTS</li>
+                        <li id="pal_RACKS">RACKS</li>
+                        <li id="pal_ENGAÑO">ENGAÑO</li>
+                        <li id="pal_ACOSO">ACOSO</li>
+                        <li id="pal_FRAUDE">FRAUDE</li>
+                        <li id="pal_SERVIDOR">SERVIDOR</li>
+                        <li id="pal_BULO">BULO</li>
+                        <li id="pal_TENDENCIA">TENDENCIA</li>
+                        <li id="pal_PERFIL">PERFIL</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="botones-acciones">
+                <button class="btn-accion btn-reintentar" onclick="inicializarSopa()">Reintentar</button>
+                <button class="btn-accion btn-finalizar" onclick="finalizarSopa()">Ver Solución</button>
+            </div>
+            <div id="mensajeSopa" class="mensaje-juego"></div>
+        </div>
+
+        <!-- SECCIÓN 2: CRUCIGRAMA 8V Y 8H -->
+        <div id="seccionCrucigrama" class="juego-seccion">
+            <h2>Crucigrama Complejo (8 Verticales y 8 Horizontales)</h2>
+            <p class="instruccion-juego">Selecciona casillas para rellenar las respuestas basadas en las pistas cruzadas.</p>
+            
+            <div class="crucigrama-layout">
+                <div class="crucigrama-grid-box" id="crucigramaGridBox"></div>
+            </div>
+
+            <div class="crucigrama-pistas-contenedor">
+                <div class="crucigrama-pistas">
+                    <strong>Horizontales (8):</strong>
+                    <ol id="pistasHorizontalesUI"></ol>
+                </div>
+                <div class="crucigrama-pistas">
+                    <strong>Verticales (8):</strong>
+                    <ol id="pistasVerticalesUI"></ol>
+                </div>
+            </div>
+
+            <div class="botones-acciones">
+                <button class="btn-accion" onclick="verificarCrucigrama()">Comprobar</button>
+                <button class="btn-accion btn-reintentar" onclick="inicializarCrucigrama()">Reintentar</button>
+                <button class="btn-accion btn-finalizar" onclick="finalizarCrucigrama()">Ver Solución</button>
+            </div>
+            <div id="mensajeCrucigrama" class="mensaje-juego"></div>
+        </div>
+
+        <button type="button" class="btn-volver" onclick="window.location.href='index.html'">Volver al Simulador</button>
+    </div>
+
+    <script>
+        function cambiarJuego(tipo) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.juego-seccion').forEach(sec => sec.classList.remove('active'));
+
+            if (tipo === 'sopa') {
+                document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+                document.getElementById('seccionSopa').classList.add('active');
+            } else {
+                document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+                document.getElementById('seccionCrucigrama').classList.add('active');
+            }
+        }
+
+        const palabrasSopaBase = ["BOTS", "RACKS", "ENGAÑO", "ACOSO", "FRAUDE", "SERVIDOR", "BULO", "TENDENCIA", "PERFIL"];
+        let sopaMatriz = [];
+        let seleccionInicio = null;
+        let palabrasEncontradasCount = 0;
+        let coordenadasPalabras = [];
+
+        function inicializarSopa() {
+            const tam = 14;
+            sopaMatriz = Array(tam).fill(null).map(() => Array(tam).fill(''));
+            palabrasEncontradasCount = 0;
+            coordenadasPalabras = [];
+            document.getElementById('mensajeSopa').innerText = "";
+
+            palabrasSopaBase.forEach(pal => {
+                let li = document.getElementById('pal_' + pal);
+                if (li) li.classList.remove('palabra-encontrada');
+            });
+
+            let orientaciones = [
+                {r: 0, c: 1},
+                {r: 1, c: 0},
+                {r: 1, c: 1},
+            ];
+
+            palabrasSopaBase.forEach(palabra => {
+                let colocada = false;
+                let intentos = 0;
+                while (!colocada && intentos < 100) {
+                    let orientacion = orientaciones[Math.floor(Math.random() * orientaciones.length)];
+                    let maxR = tam - (orientacion.r * palabra.length);
+                    let maxC = tam - (orientacion.c * palabra.length);
+                    if (maxR <= 0 || maxC <= 0) { intentos++; continue; }
+
+                    let f = Math.floor(Math.random() * maxR);
+                    let c = Math.floor(Math.random() * maxC);
+
+                    let libre = true;
+                    let posicionesTemp = [];
+                    for (let i = 0; i < palabra.length; i++) {
+                        let currR = f + (i * orientacion.r);
+                        let currC = c + (i * orientacion.c);
+                        let letraActual = sopaMatriz[currR][currC];
+                        if (letraActual !== '' && letraActual !== palabra[i]) {
+                            libre = false;
+                            break;
+                        }
+                        posicionesTemp.push({r: currR, c: currC});
+                    }
+
+                    if (libre) {
+                        for (let i = 0; i < palabra.length; i++) {
+                            sopaMatriz[f + (i * orientacion.r)][c + (i * orientacion.c)] = palabra[i];
+                        }
+                        coordenadasPalabras.push({ palabra: palabra, posiciones: posicionesTemp });
+                        colocada = true;
+                    }
+                    intentos++;
+                }
+            });
+
+            const letras = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
+            for (let r = 0; r < tam; r++) {
+                for (let c = 0; c < tam; c++) {
+                    if (sopaMatriz[r][c] === '') {
+                        sopaMatriz[r][c] = letras[Math.floor(Math.random() * letras.length)];
+                    }
+                }
+            }
+
+            renderizarSopa();
+        }
+
+        function renderizarSopa() {
+            const gridEl = document.getElementById('sopaGrid');
+            gridEl.innerHTML = '';
+            for (let r = 0; r < 14; r++) {
+                for (let c = 0; c < 14; c++) {
+                    let celda = document.createElement('div');
+                    celda.className = 'sopa-celda';
+                    celda.dataset.fila = r;
+                    celda.dataset.col = c;
+                    celda.innerText = sopaMatriz[r][c];
+                    celda.onclick = () => seleccionarCeldaSopa(r, c, celda);
+                    gridEl.appendChild(celda);
+                }
+            }
+        }
+
+        function seleccionarCeldaSopa(r, c, celdaEl) {
+            if (!seleccionInicio) {
+                seleccionInicio = {r, c};
+                celdaEl.classList.add('seleccionada');
+            } else {
+                let finR = r;
+                let finC = c;
+                validarPalabraSeleccionada(seleccionInicio.r, seleccionInicio.c, finR, finC);
+                document.querySelectorAll('.sopa-celda').forEach(el => el.classList.remove('seleccionada'));
+                seleccionInicio = null;
+            }
+        }
+
+        function validarPalabraSeleccionada(r1, c1, r2, c2) {
+            let palabraFormada = "";
+            let dr = Math.sign(r2 - r1);
+            let dc = Math.sign(c2 - c1);
+            let pasos = Math.max(Math.abs(r2 - r1), Math.abs(c2 - c1)) + 1;
+
+            if (r1 !== r2 && c1 !== c2 && Math.abs(r2 - r1) !== Math.abs(c2 - c1)) return;
+
+            let currR = r1;
+            let currC = c1;
+            let celdasAColorear = [];
+
+            for (let i = 0; i < pasos; i++) {
+                palabraFormada += sopaMatriz[currR][currC];
+                celdasAColorear.push({r: currR, c: currC});
+                currR += dr;
+                currC += dc;
+            }
+
+            let palabraInvertida = palabraFormada.split('').reverse().join('');
+            let palabraEncontrada = null;
+
+            if (palabrasSopaBase.includes(palabraFormada)) {
+                palabraEncontrada = palabraFormada;
+            } else if (palabrasSopaBase.includes(palabraInvertida)) {
+                palabraEncontrada = palabraInvertida;
+            }
+
+            if (palabraEncontrada) {
+                let li = document.getElementById('pal_' + palabraEncontrada);
+                if (li && !li.classList.contains('palabra-encontrada')) {
+                    li.classList.add('palabra-encontrada');
+                    celdasAColorear.forEach(pos => {
+                        let cel = document.querySelector(`[data-fila='${pos.r}'][data-col='${pos.c}']`);
+                        if (cel) cel.classList.add('encontrada');
+                    });
+                    palabrasEncontradasCount++;
+                    if (palabrasEncontradasCount === palabrasSopaBase.length) {
+                        let msg = document.getElementById('mensajeSopa');
+                        msg.style.color = "#10b981";
+                        msg.innerText = "¡Excelente! 100% Aciertos (9/9 palabras encontradas).";
+                    }
+                }
+            }
+        }
+
+        function finalizarSopa() {
+            palabrasSopaBase.forEach(pal => {
+                let li = document.getElementById('pal_' + pal);
+                if (li) li.classList.add('palabra-encontrada');
+            });
+
+            coordenadasPalabras.forEach(item => {
+                item.posiciones.forEach(pos => {
+                    let cel = document.querySelector(`[data-fila='${pos.r}'][data-col='${pos.c}']`);
+                    if (cel) cel.classList.add('encontrada');
+                });
+            });
+
+            let total = palabrasSopaBase.length;
+            let desaciertos = total - palabrasEncontradasCount;
+            let porcentajeAciertos = (palabrasEncontradasCount / total) * 100;
+            let porcentajeDesaciertos = (desaciertos / total) * 100;
+
+            let msg = document.getElementById('mensajeSopa');
+            msg.style.color = "#38bdf8";
+            msg.innerText = `Resultado -> Aciertos: ${porcentajeAciertos.toFixed(0)}% (${palabrasEncontradasCount}/${total}) | Desaciertos: ${porcentajeDesaciertos.toFixed(0)}% (${desaciertos}/${total})`;
+        }
+
+        const bancoHorizontales = [
+            { palabra: "BOTS", pista: "Programas automáticos que controlan cuentas falsas." },
+            { palabra: "FRAUDE", pista: "Estafa económica masiva impulsada en redes." },
+            { palabra: "BULO", pista: "Noticia falsa propagada masivamente." },
+            { palabra: "PERFIL", pista: "Identidad digital de un usuario en plataformas." },
+            { palabra: "RED", pista: "Sistema interconectado de computadoras o usuarios." },
+            { palabra: "ALGORITMO", pista: "Conjunto de reglas informáticas para priorizar contenido." },
+            { palabra: "TROLL", pista: "Usuario que busca provocar deliberadamente discusiones." },
+            { palabra: "BOTNET", pista: "Red de equipos infectados controlados remotamente." }
+        ];
+
+        const bancoVerticales = [
+            { palabra: "RACKS", pista: "Estructuras metálicas de almacenamiento para dispositivos." },
+            { palabra: "ACOSO", pista: "Hostigamiento sistemático digital para intimidar." },
+            { palabra: "SERVIDOR", pista: "Computadora central que procesa información en red." },
+            { palabra: "ENGAÑO", pista: "Propósito central que automatizan las granjas." },
+            { palabra: "SPAM", pista: "Correo o mensaje masivo no solicitado." },
+            { palabra: "VIRAL", pista: "Contenido que se propaga rápidamente por internet." },
+            { palabra: "DATOS", pista: "Información numérica o cualitativa procesada." },
+            { palabra: "CLAVE", pista: "Código secreto de acceso o término fundamental." }
+        ];
+
+        let selHActual = [];
+        let selVActual = [];
+
+        function mezclarArreglo(arreglo) {
+            let arr = [...arreglo];
+            for (let i = arr.length - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function inicializarCrucigrama() {
+            document.getElementById('mensajeCrucigrama').innerText = "";
+            
+            selHActual = mezclarArreglo(bancoHorizontales).slice(0, 8);
+            selVActual = mezclarArreglo(bancoVerticales).slice(0, 8);
+
+            const gridSize = 18;
+            let matriz = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null));
+
+            selHActual.forEach((item, idx) => {
+                let r = 1 + (idx * 2);
+                let c = 1;
+                for (let i = 0; i < item.palabra.length; i++) {
+                    let tr = r;
+                    let tc = c + i;
+                    if (tc < gridSize) {
+                        matriz[tr][tc] = { letra: item.palabra[i] };
+                    }
+                }
+            });
+
+            selVActual.forEach((item, idx) => {
+                let r = 1;
+                let c = 2 + (idx * 2);
+                for (let i = 0; i < item.palabra.length; i++) {
+                    let tr = r + i;
+                    let tc = c;
+                    if (tr < gridSize) {
+                        if (!matriz[tr][tc]) {
+                            matriz[tr][tc] = { letra: item.palabra[i] };
+                        }
+                    }
+                }
+            });
+
+            renderizarCrucigramaMatriz(matriz, gridSize, selHActual, selVActual);
+        }
+
+        function renderizarCrucigramaMatriz(matriz, size, horiz, vert) {
+            const box = document.getElementById('crucigramaGridBox');
+            box.innerHTML = '';
+            box.style.gridTemplateColumns = `repeat(${size}, 30px)`;
+
+            let pistasH = document.getElementById('pistasHorizontalesUI');
+            let pistasV = document.getElementById('pistasVerticalesUI');
+            pistasH.innerHTML = '';
+            pistasV.innerHTML = '';
+
+            horiz.forEach((item, index) => {
+                let li = document.createElement('li');
+                li.innerHTML = `<strong>(H${index + 1})</strong> ${item.pista} <em>(${item.palabra.length} letras)</em>`;
+                pistasH.appendChild(li);
+            });
+
+            vert.forEach((item, index) => {
+                let li = document.createElement('li');
+                li.innerHTML = `<strong>(V${index + 1})</strong> ${item.pista} <em>(${item.palabra.length} letras)</em>`;
+                pistasV.appendChild(li);
+            });
+
+            for (let r = 0; r < size; r++) {
+                for (let c = 0; c < size; c++) {
+                    let input = document.createElement('input');
+                    input.className = 'crucigrama-casilla';
+                    let celdaInfo = matriz[r][c];
+
+                    if (celdaInfo === null) {
+                        input.classList.add('vacia');
+                        input.disabled = true;
+                    } else {
+                        input.maxLength = 1;
+                        input.dataset.respuesta = celdaInfo.letra;
+                    }
+                    box.appendChild(input);
+                }
+            }
+        }
+
+        function verificarCrucigrama() {
+            let inputs = document.querySelectorAll('.crucigrama-casilla:not(.vacia)');
+            let total = inputs.length;
+            let aciertos = 0;
+
+            inputs.forEach(input => {
+                if (input.value.toUpperCase() === input.dataset.respuesta) {
+                    aciertos++;
+                }
+            });
+
+            let desaciertos = total - aciertos;
+            let porcentajeAciertos = (aciertos / total) * 100;
+            let porcentajeDesaciertos = (desaciertos / total) * 100;
+
+            let msg = document.getElementById('mensajeCrucigrama');
+            msg.style.color = aciertos === total ? "#10b981" : "#ef4444";
+            msg.innerText = `Resultado -> Aciertos: ${porcentajeAciertos.toFixed(0)}% (${aciertos}/${total} letras) | Desaciertos: ${porcentajeDesaciertos.toFixed(0)}% (${desaciertos}/${total} letras)`;
+        }
+
+        function finalizarCrucigrama() {
+            let inputs = document.querySelectorAll('.crucigrama-casilla:not(.vacia)');
+            let total = inputs.length;
+            inputs.forEach(input => {
+                input.value = input.dataset.respuesta;
+            });
+            let msg = document.getElementById('mensajeCrucigrama');
+            msg.style.color = "#38bdf8";
+            msg.innerText = `Solución revelada (100% Respuestas Correctas - ${total}/${total} letras completadas).`;
+        }
+
+        window.onload = () => {
+            inicializarSopa();
+            inicializarCrucigrama();
+        };
+    </script>
+</body>
+</html>

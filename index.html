@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Educativo: Bots y Redes Sociales</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
+    <style>
+        body {
+            margin: 0;
+            background-color: #0f172a;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            color: #f8fafc;
+            padding: 15px 10px;
+            box-sizing: border-box;
+        }
+
+        .animacion-celulares-top {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 8px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .celular-mini {
+            width: 24px;
+            height: 42px;
+            background-color: #1e293b;
+            border: 2px solid #475569;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .pantalla-mini {
+            width: 18px;
+            height: 32px;
+            border-radius: 2px;
+            animation: cambioColorPantalla 3s infinite alternate;
+        }
+
+        @keyframes cambioColorPantalla {
+            0% { background-color: #3b82f6; box-shadow: 0 0 5px #3b82f6; }
+            33% { background-color: #ef4444; box-shadow: 0 0 5px #ef4444; }
+            66% { background-color: #eab308; box-shadow: 0 0 5px #eab308; }
+            100% { background-color: #a855f7; box-shadow: 0 0 5px #a855f7; }
+        }
+
+        .creditos {
+            font-size: 11px;
+            color: #94a3b8;
+            text-align: center;
+            margin-bottom: 18px;
+            line-height: 1.4;
+        }
+
+        .creditos a {
+            color: #38bdf8;
+            text-decoration: none;
+        }
+
+        .titulo-principal {
+            font-size: 18px;
+            font-weight: bold;
+            color: #f8fafc;
+            text-align: center;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .navegacion-suite {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            width: 100%;
+            max-width: 950px;
+        }
+
+        .btn-navegacion {
+            background-color: #059669;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(5, 150, 105, 0.3);
+            flex: 1;
+            min-width: 220px;
+            text-align: center;
+            transition: background-color 0.2s;
+        }
+
+        .btn-navegacion.juegos {
+            background-color: #d97706;
+            box-shadow: 0 4px 10px rgba(217, 119, 6, 0.3);
+        }
+
+        .btn-navegacion:hover {
+            opacity: 0.9;
+        }
+
+        .cuadro-explicativo, .cuadro-instrucciones {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #3b82f6;
+            border-left: 5px solid #60a5fa;
+            border-radius: 8px;
+            padding: 15px;
+            width: 100%;
+            max-width: 950px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .cuadro-instrucciones {
+            border-left-color: #10b981;
+            border-color: #059669;
+            margin-bottom: 25px;
+        }
+
+        .cuadro-explicativo h3, .cuadro-instrucciones h3 {
+            margin: 0 0 8px 0;
+            color: #93c5fd;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .cuadro-instrucciones h3 {
+            color: #34d399;
+        }
+
+        .cuadro-explicativo p, .cuadro-instrucciones ul {
+            margin: 0;
+            font-size: 13px;
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+
+        .cuadro-instrucciones ul {
+            padding-left: 18px;
+        }
+
+        .cuadro-instrucciones li {
+            margin-bottom: 5px;
+        }
+
+        .panel-ingreso-inferior {
+            background: #1e293b;
+            border: 2px solid #3b82f6;
+            border-radius: 10px;
+            padding: 20px;
+            width: 100%;
+            max-width: 950px;
+            text-align: center;
+            box-sizing: border-box;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            margin-bottom: 25px;
+        }
+
+        .panel-ingreso-inferior h3 {
+            margin: 0 0 10px 0;
+            color: #38bdf8;
+            font-size: 15px;
+        }
+
+        .formulario-tema {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .input-tema-html {
+            width: 90%;
+            max-width: 450px;
+            height: 40px;
+            background-color: #0f172a;
+            color: #f8fafc;
+            border: 2px solid #64748b;
+            border-radius: 8px;
+            padding: 0 12px;
+            font-size: 15px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .boton-inicio-html {
+            background-color: #2563eb;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        }
+
+        #panelBotonesTactiles {
+            display: none;
+            width: 100%;
+            max-width: 1420px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn-tactil {
+            color: #ffffff;
+            border-radius: 6px;
+            padding: 10px 14px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            flex: 1;
+            min-width: 140px;
+            text-align: center;
+            transition: opacity 0.2s;
+        }
+
+        .btn-tactil:hover {
+            opacity: 0.85;
+        }
+
+        /* Colores independientes para cada botón de control */
+        .btn-favor {
+            background-color: #0d9488; /* Verde teal */
+            border: 1px solid #14b8a6;
+        }
+
+        .btn-contra {
+            background-color: #dc2626; /* Rojo intenso */
+            border: 1px solid #ef4444;
+        }
+
+        .btn-fake {
+            background-color: #d97706; /* Naranja brillante */
+            border: 1px solid #f59e0b;
+        }
+
+        .btn-apagado {
+            background-color: #475569;
+            border: 1px solid #64748b;
+        }
+
+        .btn-activado {
+            background-color: #2563eb;
+            border: 1px solid #3b82f6;
+        }
+
+        .btn-real {
+            background-color: #7c3aed;
+            border: 1px solid #8b5cf6;
+        }
+
+        .btn-reiniciar {
+            background-color: #991b1b;
+            border: 1px solid #b91c1c;
+        }
+
+        #lienzoSimulador {
+            max-width: 100% !important;
+            height: auto !important;
+            border-radius: 8px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="animacion-celulares-top">
+        <div class="celular-mini"><div class="pantalla-mini"></div></div>
+        <div class="celular-mini"><div class="pantalla-mini"></div></div>
+        <div class="celular-mini"><div class="pantalla-mini"></div></div>
+        <div class="celular-mini"><div class="pantalla-mini"></div></div>
+        <div class="celular-mini"><div class="pantalla-mini"></div></div>
+    </div>
+
+    <div class="creditos">
+        Creado por Lic. Rolando Herrera Burgos | 
+        <a href="https://creativecommons.org/licenses/by/4.0/deed.es" target="_blank">Licencia CC BY 4.0</a>
+    </div>
+
+    <div class="titulo-principal">
+        SIMULADOR EDUCATIVO: INFLUENCIA DE BOTS EN REDES SOCIALES
+    </div>
+
+    <div class="navegacion-suite">
+        <button class="btn-navegacion" onclick="window.location.href='evaluacion.html'">📝 Ir a Evaluación Teórica</button>
+        <button class="btn-navegacion juegos" onclick="window.location.href='juegos.html'">🎮 Ir a Minijuegos Interactivos</button>
+    </div>
+
+    <div class="cuadro-explicativo">
+        <h3>Funcionamiento y Objetivos Educativos</h3>
+        <p>
+            Este simulador interactivo ilustra cómo operan las granjas de bots, la difusión de Fake News, el apagado/reactivación de cuentas automatizadas y las opiniones reales.
+            <strong>Objetivos:</strong> Analizar la variación de la percepción pública y el impacto del control automatizado.
+        </p>
+    </div>
+
+    <div class="cuadro-instrucciones">
+        <h3>Instrucciones de Uso</h3>
+        <ul>
+            <li><strong>Paso 1:</strong> Escribe un tema en el panel inferior y presiona <em>"INICIAR SIMULACIÓN"</em>.</li>
+            <li><strong>Paso 2:</strong> Usa los botones táctiles o las teclas <code>[1]</code>, <code>[2]</code>, <code>[3]</code>, <code>[4]</code>, <code>[5]</code>, <code>[6]</code>, <code>[R]</code>.</li>
+            <li><strong>Paso 3:</strong> Analiza simultáneamente los dos gráficos ensanchados, la granja de celulares y el feed de mensajes.</li>
+        </ul>
+    </div>
+
+    <div id="panelBienvenida" class="panel-ingreso-inferior">
+        <h3>Configuración del Estudio</h3>
+        <div class="formulario-tema">
+            <input type="text" id="inputTemaHtml" class="input-tema-html" placeholder="Ej: Reforma fiscal, Elecciones, etc.">
+            <button id="botonInicioHtml" class="boton-inicio-html" onclick="lanzarSimuladorDesdeHtml()">INICIAR SIMULACIÓN</button>
+        </div>
+    </div>
+
+    <div id="panelBotonesTactiles">
+        <button class="btn-tactil btn-favor" onclick="ejecutarAccionBot('1')">[1] Bots Favor</button>
+        <button class="btn-tactil btn-contra" onclick="ejecutarAccionBot('2')">[2] Ataque Contra</button>
+        <button class="btn-tactil btn-fake" onclick="ejecutarAccionBot('3')">[3] Fake News</button>
+        <button class="btn-tactil btn-apagado" onclick="ejecutarAccionBot('4')">[4] Apagar Bots</button>
+        <button class="btn-tactil btn-activado" onclick="ejecutarAccionBot('5')">[5] Reactivar Bots</button>
+        <button class="btn-tactil btn-real" onclick="ejecutarAccionBot('6')">[6] Opinión Real</button>
+        <button class="btn-tactil btn-reiniciar" onclick="ejecutarAccionBot('R')">[R] Reiniciar</button>
+    </div>
+
+    <script src="sketch.js"></script>
+
+</body>
+</html>
